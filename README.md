@@ -24,6 +24,8 @@ can be found, or you can run it locally).
 
 # Few points and todos
 
+StanfordCoreNLP was used because afaik NLTK requires a grammar.
+
 It could do well with result caching.
 
 Timeout should be added while websocket is waiting for auth.
