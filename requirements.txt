@@ -1,0 +1,7 @@
+Flask
+Flask-Sockets
+Flask-SQLAlchemy
+Flask-Argon2
+gevent
+gunicorn
+pycorenlp
