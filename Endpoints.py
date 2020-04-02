@@ -9,9 +9,11 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 from Auth import auth_rest_endpoint, auth_socket, Auth
 from User import User
+from Text import Text
 from Database import init_db, db_session
 
 import time
+import json
 
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
@@ -60,11 +62,24 @@ def auth():
         return resp
     return Response(status=403)
 
-@app.route("/test", methods=['GET'])
+@app.route("/upload", methods=['POST'])
 @auth_rest_endpoint
-def test():
-    time.sleep(10)
-    return Response(status=200)
+def upload():
+    body = request.get_json()
+    if body is None:
+        return Response(status=400)
+    text = body['text']
+    if text is None:
+        return Response(status=400)
+    already_exists = Text.query.filter(Text.text == text).first()
+    if already_exists:
+        return Response(json.dumps({"id":already_exists.id}),status=200)
+    else:
+        text_entity = Text(text)
+        db_session.add(text_entity)
+        db_session.commit()
+        text_entity = Text.query.filter(Text.text == text).first()
+        return Response(json.dumps({"id":text_entity.id}),status=200)        
 
 @app.route("/test2", methods=['GET'])
 def test2():

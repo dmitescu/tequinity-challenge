@@ -15,6 +15,7 @@ Base.query = db_session.query_property()
 def init_db():
     import User
     import Auth
+    import Text
     Base.metadata.create_all(bind=engine)
     db_session.commit()
 
