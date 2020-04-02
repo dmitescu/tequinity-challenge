@@ -107,8 +107,38 @@ def parse():
 @auth_socket
 def echo_socket(ws):
     while not ws.closed:
-        ws.send("hopa")
-        time.sleep(1)
+        body_unparsed = ws.receive()
+
+        try:
+            body = json.loads(body_unparsed)
+        except json.decoder.JSONDecodeError:
+            ws.send(json.dumps({"status":"error"}))
+            return
+
+        text_id = body["text_id"]
+        text = body["text"]
+
+        if text:
+            already_exists = Text.query.filter(Text.text == text).first()
+            if already_exists:
+                ws.send(json.dumps({"id":already_exists.id}))
+            else:
+                text_entity = Text(text)
+                db_session.add(text_entity)
+                db_session.commit()
+                text_entity = Text.query.filter(Text.text == text).first()
+                ws.send(json.dumps({"id":text_entity.id}))
+        if text_id:
+            found_text = Text.query.filter(Text.id == text_id).first()
+
+            if found_text is None:
+                return Response(status=400)
+
+            parsing_request = ParsingRequest(found_text.text)
+            parsing_result = parsing_request.get_result()
+
+            ws.send(parsing_result.to_json())
+        ws.send(json.dumps({"status":"error"}))
         
 @app.route("/health", methods=['GET'])
 def health():
