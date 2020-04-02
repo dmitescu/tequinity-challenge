@@ -30,8 +30,8 @@ def register():
     body = request.get_json()
     if body is None:
         return Response(status=400)
-    user = body['username']
-    passwd = body['password']
+    user = body.get('username')
+    passwd = body.get('password')
     if user is None or passwd is None:
         return Response(status=400)
     u = User(user,passwd)
@@ -46,8 +46,8 @@ def auth():
     body = request.get_json()
     if body is None:
         return Response(status=400)
-    user = body['username']
-    passwd = body['password']
+    user = body.get('username')
+    passwd = body.get('password')
     if user is None or passwd is None:
         return Response(status=400)
     found_user = User.query.filter(User.username == user).first()
@@ -89,7 +89,7 @@ def parse():
     body = request.get_json()
     if body is None:
         return Response(status=400)
-    text_id = body['text_id']
+    text_id = body.get('text_id')
     if text_id is None:
         return Response(status=400)
 
@@ -115,8 +115,8 @@ def echo_socket(ws):
             ws.send(json.dumps({"status":"error"}))
             return
 
-        text_id = body["text_id"]
-        text = body["text"]
+        text_id = body.get("text_id")
+        text = body.get("text")
 
         if text:
             already_exists = Text.query.filter(Text.text == text).first()
