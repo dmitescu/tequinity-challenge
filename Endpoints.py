@@ -10,6 +10,8 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from Auth import auth_rest_endpoint, auth_socket, Auth
 from User import User
 from Text import Text
+from ParsingRequest import ParsingRequest
+
 from Database import init_db, db_session
 
 import time
@@ -81,9 +83,25 @@ def upload():
         text_entity = Text.query.filter(Text.text == text).first()
         return Response(json.dumps({"id":text_entity.id}),status=200)        
 
-@app.route("/test2", methods=['GET'])
-def test2():
-    return Response(status=200)
+@app.route("/parse", methods=['POST'])
+@auth_rest_endpoint
+def parse():
+    body = request.get_json()
+    if body is None:
+        return Response(status=400)
+    text_id = body['text_id']
+    if text_id is None:
+        return Response(status=400)
+
+    found_text = Text.query.filter(Text.id == text_id).first()
+
+    if found_text is None:
+        return Response(status=400)
+
+    parsing_request = ParsingRequest(found_text.text)
+    parsing_result = parsing_request.get_result()
+
+    return Response(parsing_result.to_json(), status=200)
 
 @sockets.route("/echo")
 @auth_socket
