@@ -3,6 +3,7 @@ from flask import Flask, Response
 from functools import wraps
 
 import random
+import json
 
 from sqlalchemy import Column, Integer, String
 
@@ -32,6 +33,7 @@ def auth_socket(f):
         ws = args[0]
 
         # TODO add timeout to avoid DOS
+        ws.send(json.dumps({"status": "beggining auth"}))
         auth = ws.receive()
 
         try:
