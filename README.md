@@ -18,7 +18,8 @@ Alternatively you can run it locally with
 gunicorn --worker-class flask_sockets.worker Endpoints:app
 ```
 
-To run it it requires `nlp` host to point to StanfordCoreNLP (docker images
+To run it it requires either `nlp` host to exist or `SC_NLP_HOST`
+set to the format `host:ip` to point to the StanfordCoreNLP (docker images
 can be found, or you can run it locally).
 
 # Few points
