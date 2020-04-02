@@ -42,7 +42,7 @@ def auth_socket(f):
             ws.send(json.dumps({"status": "error"}))
             return
 
-        token = auth_json['X-Auth-Token']
+        token = auth_json.get('X-Auth-Token')
 
         if token is None:
             ws.send(json.dumps({"status":"unauthenticated"}))
